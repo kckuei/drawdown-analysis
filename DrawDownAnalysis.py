@@ -108,7 +108,8 @@ class DrawDownAnalysis:
         elev - target drawdown elevation (ft)
         note - note describing the drawdown criteria, e.g. "10% resevoir head in 7 days"
         """
-        self.drawdown_elev = elev
+        self.elev_drawdown = elev
+        print(f"Assigned target drawdown elevation...: {elev}")
         return
     
     def runDrawdownAnalysis(self):
@@ -238,12 +239,12 @@ class DrawDownAnalysis:
             print(f"Results saved to {fname}")
         return
     
-    def summarize(self, elev_drawdown, verbose=True):
+    def summarize(self, verbose=True):
         """ Report time to 10% reduction in max certified to heel of dam, and time to drained resevoir
         verbose - if true, prints statements
         """
         if not self.df_results.empty:
-            mask_10percH = self.df_results['elev(ft)'] < elev_drawdown
+            mask_10percH = self.df_results['elev(ft)'] < self.elev_drawdown
             drained_index = self.df_results['dVol(acre-ft)'][self.df_results['dVol(acre-ft)'] == 0].index[0]
             t_10percH = self.df_results[mask_10percH]['time(days)'].iloc[0]
             t_drained = self.df_results['time(days)'].loc[drained_index]
@@ -265,10 +266,9 @@ class DrawDownAnalysis:
             print(f"Zero discharge reached at index: {drained_index}")
             return Analysis.df_results.head(drained_index + 1)
     
-    def sensitivityAnalysis(self, elev_drawdown, ratios = np.array([1.0, 1.25, 1.5, 2.0, 5.0, 10.0]), display=True):
+    def sensitivityAnalysis(self, ratios = np.array([1.0, 1.25, 1.5, 2.0, 5.0, 10.0]), display=True):
         """
         Performs sensitivity analysis for different loss ratios
-        elev_drawdown - target elevation for drawdown
         ratios - loss ratio sensitivity value = K(sensitivity analysis)/K_eq(base analysis)
                  defaults to ratios of [1.0, 1.25, 1.5, 2.0, 5.0, 10.0]
         display - boolean flag for displaying summary results
@@ -283,10 +283,11 @@ class DrawDownAnalysis:
             a.assignOutletParams(self.N_mult, self.diam, k)
             a.assignResevoirParams(self.elev_o, self.H_o)
             a.assignAreaCapacityCurves(self.df_area, self.df_capacity)
+            a.assignDrawDownTargetElev(self.elev_drawdown, note="")
 
             # run the analysis and save results for plotting
             a.runDrawdownAnalysis()
-            t10, tdrain = a.summarize(elev_drawdown, verbose=False)
+            t10, tdrain = a.summarize(verbose=False)
             time_drawdowns.append(t10)
             time_drained.append(tdrain)
             analyses.append(a)
@@ -305,7 +306,7 @@ class DrawDownAnalysis:
                     markeredgecolor='teal',
                     label=f'K_eq={ai.K_eq:.2f}')
         plt.plot([0, t_max],
-                np.ones(2)*ai.getStorageAtElev(elev_drawdown),
+                np.ones(2)*ai.getStorageAtElev(self.elev_drawdown),
                 'k--', lw=1.0,
                 label='10% Drawdown')
 
@@ -363,7 +364,7 @@ if __name__ == '__main__':
     Analysis.assignAreaCapacityCurves(path_area, path_cap)
     Analysis.assignDrawDownTargetElev(elev_drawdown, note="10% resevoir head in 7 days")
     Analysis.runDrawdownAnalysis()
-    Analysis.summarize(elev_drawdown)
+    Analysis.summarize()
     Analysis.saveResultsToCSV()
-    # Analysis.sensitivityAnalysis(elev_drawdown)
+    # Analysis.sensitivityAnalysis()
     print("Analysis successful.")

@@ -38,9 +38,9 @@ def main():
     Analysis.assignAreaCapacityCurves(path_area, path_cap)
     Analysis.assignDrawDownTargetElev(elev_drawdown, note="10% resevoir head in 7 days")
     Analysis.runDrawdownAnalysis()
-    Analysis.summarize(elev_drawdown)
+    Analysis.summarize()
     Analysis.saveResultsToCSV()
-    Analysis.sensitivityAnalysis(elev_drawdown)
+    Analysis.sensitivityAnalysis()
     print("Analysis successful.")
 
 
