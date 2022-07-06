@@ -112,18 +112,18 @@ class DrawDownAnalysis:
         print(f"Assigned target drawdown elevation...: {elev}")
         return
     
+    def discharge(self, H_T, A, K_eq):
+        """ Chapter 10, Section 10.14, Eq. 8
+        H_T - Total head to overcome losses to produce discharge [ft]
+        A - area of pipe [ft^2]
+        K_eq - equivalent losses
+        """
+        Q = A*np.sqrt((2 * self.GRAVITY * H_T)/K_eq)
+        return Q
+
     def runDrawdownAnalysis(self):
         """ Drawdown analysis routine
         """
-        def discharge(H_T, A, K_eq):
-            """ Chapter 10, Section 10.14, Eq. 8
-            H_T - Total head to overcome losses to produce discharge [ft]
-            A - area of pipe [ft^2]
-            K_eq - equivalent losses
-            """
-            Q = A*np.sqrt((2 * self.GRAVITY * H_T)/K_eq)
-            return Q
-        
         # initialize arrays
         time = np.arange(1, self.n_steps + 1) * self.dt
         elev = np.zeros(self.n_steps)
@@ -161,7 +161,7 @@ class DrawDownAnalysis:
 
             # Discharge (cfs)
             if head[i] > 0: # discharge is positive so long as head is positive
-                Q[i] = self.N_mult * discharge(head[i], self.area, self.K_eq)
+                Q[i] = self.N_mult * self.discharge(head[i], self.area, self.K_eq)
                 Q[i] = max(0, Q[i]) # flow must be non-negative
 
             # Velocity (ft/s)
