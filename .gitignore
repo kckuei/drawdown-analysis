@@ -5,6 +5,8 @@
 !.gitignore
 !README.md
 !drawdown-analysis-01.ipynb
+!DrawDownAnalysis.py
+!test.py
 
 # Ignore all files named .csv
 **.csv
