@@ -1,9 +1,11 @@
 # import dependencies
+import os
 import numpy as np
 import pandas as pd
 import matplotlib.pylab as plt
 import matplotlib as mpl
 from datetime import datetime
+from itertools import cycle
 
 class DrawDownAnalysis:
     """
@@ -64,6 +66,8 @@ class DrawDownAnalysis:
         path_area - path to area-elev curve csv file: area,elev [acres,ft]
         path_cap - path to capacity-elev curve csv file: capacity,elev [acre-ft,ft]
         """
+        self.path_area = path_area
+        self.path_cap = path_cap
         self.df_area = pd.read_csv(path_area)
         self.df_capacity = pd.read_csv(path_cap)
         return
@@ -214,7 +218,7 @@ class DrawDownAnalysis:
                 print(f"Time at which resevoir is drained: {t_drained:.2f} days" )
         return t_10percH, t_drained
     
-    def display_table(self, elev=None):
+    def displayTable(self, elev=None):
         """ Display table results
         elev - target elevation to center table [ft]; if None, returns table to drawdown
         """
@@ -226,6 +230,53 @@ class DrawDownAnalysis:
             drained_index = Analysis.df_results['dVol(acre-ft)'][Analysis.df_results['dVol(acre-ft)'] == 0].index[0]
             print(f"Zero discharge reached at index: {drained_index}")
             return Analysis.df_results.head(drained_index + 1)
+    
+    def sensitivityAnalysis(self, ratios = np.array([1.0, 1.25, 1.5, 2.0, 5.0, 10.0])):
+        """
+        Performs sensitivity analysis for different loss ratios
+        ratios - loss ratio sensitivity value = K(sensitivity analysis)/K_eq(base analysis)
+        """
+        analyses = [] 
+        time_drawdowns = [] 
+        time_drained = []
+        K_values = ratios * K_eq
+        for i, k in enumerate(K_values):
+            # instantiate a new object using exisitng params but for different k values
+            a = DrawDownAnalysis(dt=self.dt, n_steps=self.n_steps)
+            a.assignOutletParams(self.N_mult, self.diam, k)
+            a.assignResevoirParams(self.elev_o, self.H_o)
+            a.assignAreaCapacityCurves(self.path_area, self.path_cap)
+
+            # run the analysis and save results for plotting
+            a.runDrawdownAnalysis()
+            t10, tdrain = a.summarize(verbose=False)
+            time_drawdowns.append(t10)
+            time_drained.append(tdrain)
+            analyses.append(a)
+            
+        # Plot the results
+        symbols = cycle(['o','s','^'])
+        x, y = 'time(days)', 'storage_initial(acre-ft)'
+        t_max = analyses[0].df_results['time(days)'].max()
+
+        fig = plt.figure(figsize=(8,6))
+        for ai in analyses:
+            plt.plot(ai.df_results[x], 
+                    ai.df_results[y],
+                    marker=next(symbols),
+                    markevery=100, 
+                    markeredgecolor='teal',
+                    label=f'K_eq={ai.K_eq:.2f}')
+        plt.plot([0, t_max],
+                np.ones(2)*ai.getStorageAtElev(elev_drawdown),
+                'k--', lw=1.0,
+                label='10% Drawdown')
+
+        plt.grid(which='both',alpha=0.2)
+        plt.xlabel(x), plt.ylabel(y)
+        plt.xlim(left=0, right=t_max), plt.ylim(bottom=0)
+        plt.legend(loc='upper right')
+        plt.show()
 
 
 if __name__ == '__main__':
@@ -261,17 +312,11 @@ if __name__ == '__main__':
 
     # Run analysis
     Analysis = DrawDownAnalysis(dt=1, n_steps=1100)
-
     Analysis.assignOutletParams(N_mult, diam, K_eq)
-
     Analysis.assignResevoirParams(elev_o, H_o)
-
     Analysis.assignAreaCapacityCurves(path_area, path_cap)
-
     Analysis.assignDrawDownTargetElev(elev_drawdown, note="10% resevoir head in 7 days")
-
     Analysis.runDrawdownAnalysis()
-
     Analysis.saveResultsToCSV()
-
+    Analysis.sensitivityAnalysis(N_mult, diam, K_eq, elev_o, H_o, path_area, path_cap)
     print("Analysis successful.")
