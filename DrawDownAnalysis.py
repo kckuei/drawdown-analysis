@@ -78,11 +78,11 @@ class DrawDownAnalysis:
         cap - either path to capacity-elev curve csv file or a pandas dataframe: capacity,elev [acre-ft,ft]
         """
         # If paths are passed
-        if isinstance(cap, str): 
+        if (isinstance(cap, str) and isinstance(area, str)): 
             print("Paths passed for area capacity curves...")
             try: 
-                self.df_area = pd.read_csv(path_area)
-                self.df_capacity = pd.read_csv(path_cap)
+                self.df_area = pd.read_csv(area)
+                self.df_capacity = pd.read_csv(cap)
                 print("Sucessful assignment of area capacity curves!")
             except:
                 print("Unsuccessful assignment of area capacity curves.")
@@ -114,7 +114,6 @@ class DrawDownAnalysis:
     def runDrawdownAnalysis(self):
         """ Drawdown analysis routine
         """
-        
         def discharge(H_T, A, K_eq):
             """ Chapter 10, Section 10.14, Eq. 8
             H_T - Total head to overcome losses to produce discharge [ft]
@@ -138,6 +137,7 @@ class DrawDownAnalysis:
         elev[0] = self.elev_o
         head[0] = self.H_o
         # Get initial storage from capacity-curve based on initial elev
+        self.df_capacity['elev-ft']
         storage_initial[0] = np.interp(self.elev_o,                           
                                        self.df_capacity['elev-ft'], 
                                        self.df_capacity['storage-acre-ft'])
@@ -238,7 +238,7 @@ class DrawDownAnalysis:
             print(f"Results saved to {fname}")
         return
     
-    def summarize(self, verbose=True):
+    def summarize(self, elev_drawdown, verbose=True):
         """ Report time to 10% reduction in max certified to heel of dam, and time to drained resevoir
         verbose - if true, prints statements
         """
@@ -265,9 +265,10 @@ class DrawDownAnalysis:
             print(f"Zero discharge reached at index: {drained_index}")
             return Analysis.df_results.head(drained_index + 1)
     
-    def sensitivityAnalysis(self, ratios = np.array([1.0, 1.25, 1.5, 2.0, 5.0, 10.0]), display=True):
+    def sensitivityAnalysis(self, elev_drawdown, ratios = np.array([1.0, 1.25, 1.5, 2.0, 5.0, 10.0]), display=True):
         """
         Performs sensitivity analysis for different loss ratios
+        elev_drawdown - target elevation for drawdown
         ratios - loss ratio sensitivity value = K(sensitivity analysis)/K_eq(base analysis)
                  defaults to ratios of [1.0, 1.25, 1.5, 2.0, 5.0, 10.0]
         display - boolean flag for displaying summary results
@@ -275,7 +276,7 @@ class DrawDownAnalysis:
         analyses = [] 
         time_drawdowns = [] 
         time_drained = []
-        K_values = ratios * K_eq
+        K_values = ratios * self.K_eq
         for i, k in enumerate(K_values):
             # instantiate a new object using exisitng params but for different k values
             a = DrawDownAnalysis(dt=self.dt, n_steps=self.n_steps)
@@ -285,7 +286,7 @@ class DrawDownAnalysis:
 
             # run the analysis and save results for plotting
             a.runDrawdownAnalysis()
-            t10, tdrain = a.summarize(verbose=False)
+            t10, tdrain = a.summarize(elev_drawdown, verbose=False)
             time_drawdowns.append(t10)
             time_drained.append(tdrain)
             analyses.append(a)
@@ -362,8 +363,7 @@ if __name__ == '__main__':
     Analysis.assignAreaCapacityCurves(path_area, path_cap)
     Analysis.assignDrawDownTargetElev(elev_drawdown, note="10% resevoir head in 7 days")
     Analysis.runDrawdownAnalysis()
-    Analysis.summarize()
+    Analysis.summarize(elev_drawdown)
     Analysis.saveResultsToCSV()
-    # Analysis.sensitivityAnalysis()
+    # Analysis.sensitivityAnalysis(elev_drawdown)
     print("Analysis successful.")
-
