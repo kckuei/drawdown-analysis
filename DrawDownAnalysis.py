@@ -63,13 +63,13 @@ class DrawDownAnalysis:
         return
     
     def assignResevoirParams(self, elev_o, H_o):
-        """ Assign resevoir parameters
+        """ Assign reservoir parameters
         elev_o - initial elevation (max certified pool) [ft]
         H_o - initial head (max head from max certified pool to outlet CL) [ft]
         """
         self.elev_o = elev_o
         self.H_o = H_o
-        print(f"Assigned resevoir parameters...: elev_o: {elev_o}, H_o: {H_o}")
+        print(f"Assigned reservoir parameters...: elev_o: {elev_o}, H_o: {H_o}")
         return
     
     def assignAreaCapacityCurves(self, area, cap):
@@ -83,7 +83,7 @@ class DrawDownAnalysis:
             try: 
                 self.df_area = pd.read_csv(area)
                 self.df_capacity = pd.read_csv(cap)
-                print("Sucessful assignment of area capacity curves!")
+                print("Successful assignment of area capacity curves!")
             except:
                 print("Unsuccessful assignment of area capacity curves.")
         # Else if data frames are passed into
@@ -94,7 +94,7 @@ class DrawDownAnalysis:
             if (cap.columns == cap_names).all() and (area.columns == area_names).all():
                 self.df_area = area
                 self.df_capacity = cap
-                print("Area capacity curves assigned sucessfully!")
+                print("Area capacity curves assigned successfully!")
             else:
                 print("Invalid columns names.")
                 print(f"Capacity column names must follow: {cap_names}.")
