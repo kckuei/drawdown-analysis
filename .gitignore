@@ -1,1 +1,14 @@
-*.csv
+# Blocklist files/folders in same directory as the .gitignore file
+/*
+
+# Includelist some files
+!.gitignore
+!README.md
+!drawdown-analysis-01.ipynb
+
+# Ignore all files named .csv
+**.csv
+
+# Includelist folders
+!area-capacity-curve
+!assets
