@@ -7,6 +7,9 @@ import matplotlib as mpl
 from datetime import datetime
 from itertools import cycle
 
+# pandas table formatting
+pd.options.display.float_format = "{:,.2f}".format
+
 class DrawDownAnalysis:
     """
     Class for performing drawdown analysis of dam outlet works
@@ -34,9 +37,14 @@ class DrawDownAnalysis:
         self.radius_h = None
         
         # initialize tables
+        self.path_area = None
+        self.path_cap = None
         self.df_results = pd.DataFrame()
         self.df_capacity = pd.DataFrame()
         self.df_area = pd.DataFrame()
+
+        print(f"Instantiated drawdown object...: dt: {dt}, n_steps: {n_steps}")
+        
         
     def assignOutletParams(self, N_mult, diam, K_eq):
         """ Assign outlet parameters
@@ -45,11 +53,13 @@ class DrawDownAnalysis:
         L - length of outlet [ft]
         K_eq - equivalent coefficient for losses
         """
-        self. N_mult = N_mult
+        self.N_mult = N_mult
         self.diam = diam
         self.K_eq = K_eq
         self.area = (np.pi/4)*diam**2
         self.radius_h = self.area/(np.pi*diam) # hydraulic radius = area/perimeter
+        print(f"Assigned outlet parameters...: N_mult: {N_mult}, diam: {diam:.2f}, K_eq: {K_eq:.2f}")
+        print(f"Derived outlet parameters...: area: {self.area:.2f}, radius_h: {self.radius_h:.2f}")
         return
     
     def assignResevoirParams(self, elev_o, H_o):
@@ -59,17 +69,38 @@ class DrawDownAnalysis:
         """
         self.elev_o = elev_o
         self.H_o = H_o
+        print(f"Assigned resevoir parameters...: elev_o: {elev_o}, H_o: {H_o}")
         return
     
-    def assignAreaCapacityCurves(self, path_area, path_cap):
+    def assignAreaCapacityCurves(self, area, cap):
         """
-        path_area - path to area-elev curve csv file: area,elev [acres,ft]
-        path_cap - path to capacity-elev curve csv file: capacity,elev [acre-ft,ft]
+        area - either path to area-elev curve csv file or a pandas dataframe: area,elev [acres,ft]
+        cap - either path to capacity-elev curve csv file or a pandas dataframe: capacity,elev [acre-ft,ft]
         """
-        self.path_area = path_area
-        self.path_cap = path_cap
-        self.df_area = pd.read_csv(path_area)
-        self.df_capacity = pd.read_csv(path_cap)
+        # If paths are passed
+        if isinstance(cap, str): 
+            print("Paths passed for area capacity curves...")
+            try: 
+                self.df_area = pd.read_csv(path_area)
+                self.df_capacity = pd.read_csv(path_cap)
+                print("Sucessful assignment of area capacity curves!")
+            except:
+                print("Unsuccessful assignment of area capacity curves.")
+        # Else if data frames are passed into
+        elif (isinstance(cap, pd.DataFrame) and isinstance(area, pd.DataFrame)):
+            print("Dataframes passed for area capacity curves...")
+            area_names = ['area-acres', 'elev-ft']
+            cap_names = ['storage-acre-ft', 'elev-ft']
+            if (cap.columns == cap_names).all() and (area.columns == area_names).all():
+                self.df_area = area
+                self.df_capacity = cap
+                print("Area capacity curves assigned sucessfully!")
+            else:
+                print("Invalid columns names.")
+                print(f"Capacity column names must follow: {cap_names}.")
+                print(f"Area column names must follow: {area_names}.")
+        else:
+            print("Invalid type.")
         return
     
     def assignDrawDownTargetElev(self, elev, note=""):
@@ -106,7 +137,8 @@ class DrawDownAnalysis:
         # apply initial conditions
         elev[0] = self.elev_o
         head[0] = self.H_o
-        storage_initial[0] = np.interp(self.elev_o,                           # Get initial storage from capacity-curve based on initial elev
+        # Get initial storage from capacity-curve based on initial elev
+        storage_initial[0] = np.interp(self.elev_o,                           
                                        self.df_capacity['elev-ft'], 
                                        self.df_capacity['storage-acre-ft'])
 
@@ -201,7 +233,9 @@ class DrawDownAnalysis:
         """ Save the results to a .csv file
         """
         if not self.df_results.empty:
-            self.df_results.to_csv(f"{str(datetime.now().date())}" + f"-{tag}.csv")
+            fname = f"{str(datetime.now().date())}" + f"-{tag}.csv"
+            self.df_results.to_csv(fname)
+            print(f"Results saved to {fname}")
         return
     
     def summarize(self, verbose=True):
@@ -231,10 +265,12 @@ class DrawDownAnalysis:
             print(f"Zero discharge reached at index: {drained_index}")
             return Analysis.df_results.head(drained_index + 1)
     
-    def sensitivityAnalysis(self, ratios = np.array([1.0, 1.25, 1.5, 2.0, 5.0, 10.0])):
+    def sensitivityAnalysis(self, ratios = np.array([1.0, 1.25, 1.5, 2.0, 5.0, 10.0]), display=True):
         """
         Performs sensitivity analysis for different loss ratios
         ratios - loss ratio sensitivity value = K(sensitivity analysis)/K_eq(base analysis)
+                 defaults to ratios of [1.0, 1.25, 1.5, 2.0, 5.0, 10.0]
+        display - boolean flag for displaying summary results
         """
         analyses = [] 
         time_drawdowns = [] 
@@ -245,7 +281,7 @@ class DrawDownAnalysis:
             a = DrawDownAnalysis(dt=self.dt, n_steps=self.n_steps)
             a.assignOutletParams(self.N_mult, self.diam, k)
             a.assignResevoirParams(self.elev_o, self.H_o)
-            a.assignAreaCapacityCurves(self.path_area, self.path_cap)
+            a.assignAreaCapacityCurves(self.df_area, self.df_capacity)
 
             # run the analysis and save results for plotting
             a.runDrawdownAnalysis()
@@ -277,6 +313,15 @@ class DrawDownAnalysis:
         plt.xlim(left=0, right=t_max), plt.ylim(bottom=0)
         plt.legend(loc='upper right')
         plt.show()
+
+        # print results
+        if display:
+            df = pd.DataFrame(data={'Sensitivity (K/K_eq)': ratios, 
+                                    'K':K_values, 
+                                    't_10% (days)':time_drawdowns,
+                                    't_drain (days)':time_drained
+                                    })
+            print(df)
 
 
 if __name__ == '__main__':
@@ -317,6 +362,8 @@ if __name__ == '__main__':
     Analysis.assignAreaCapacityCurves(path_area, path_cap)
     Analysis.assignDrawDownTargetElev(elev_drawdown, note="10% resevoir head in 7 days")
     Analysis.runDrawdownAnalysis()
+    Analysis.summarize()
     Analysis.saveResultsToCSV()
-    Analysis.sensitivityAnalysis(N_mult, diam, K_eq, elev_o, H_o, path_area, path_cap)
+    # Analysis.sensitivityAnalysis()
     print("Analysis successful.")
+
