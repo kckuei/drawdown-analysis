@@ -1,11 +1,12 @@
  # 
+ ```
     ___                       _                         _               _           _     
    /   \_ __ __ ___      ____| | _____      ___ __     /_\  _ __   __ _| |_   _ ___(_)___ 
   / /\ / '__/ _` \ \ /\ / / _` |/ _ \ \ /\ / / '_ \   //_\\| '_ \ / _` | | | | / __| / __|
  / /_//| | | (_| |\ V  V / (_| | (_) \ V  V /| | | | /  _  \ | | | (_| | | |_| \__ \ \__ \
 /___,' |_|  \__,_| \_/\_/ \__,_|\___/ \_/\_/ |_| |_| \_/ \_/_| |_|\__,_|_|\__, |___/_|___/
                                                                           |___/           
-
+```
 
 
 Simple class implementation for performing drawdown analysis of dam outlet works using area capacity curves and discharge functions.
