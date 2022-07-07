@@ -57,6 +57,7 @@ Analysis.sensitivityAnalysis()
 * Unit system
 * Outlet table implementation for distinct outlet configurations
 * Command line implementation
+* Excel output for printing to files
 
 [loss-model]: assets/loss-model.png
 [loss-table]: assets/loss-table.png
