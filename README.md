@@ -25,27 +25,27 @@ $$Q=A\sqrt{\frac{2\cdot g\cdot H_T}{K_{eq}}}$$
 
 The code below is a example snippet of the class usage. A more detailed notebook example is included. 
 
-```
+```python
 import DrawDownAnalysis as da
 
 # Parameters
-N_mult = 1                # Discharge function multiplier
+multiplier = 1            # Discharge function multiplier
 diam = 36/12              # Outlet diameter (ft)
-K_eq = 3                  # Equivalent loss factor
-elev_o = 2224             # Starting elevation (max certified pool)
-H_o = 85                  # Initial head (MPWSE - El. at D/S outlet)
-elev_drawdown = 2209.6    # Final/target drawdown elevation
+loss_factor = 3           # Equivalent loss factor
+initial_elev = 2224       # Starting elevation (max certified pool)
+initial_head = 85         # Initial head (MPWSE - El. at D/S outlet)
+target_elev = 2209.6      # Final/target drawdown elevation
 
 # Area Capacity Curves
-path_area = r"./area-capacity-curve/elev-area-curve-1977.csv"
-path_cap = r"./area-capacity-curve/elev-storage-curve-1977.csv"
+area     = r"./area-capacity-curve/elev-area-curve-1977.csv"
+capacity = r"./area-capacity-curve/elev-storage-curve-1977.csv"
 
 # Analysis
 Analysis = da.DrawDownAnalysis(dt=1, n_steps=1100)
-Analysis.assignOutletParams(N_mult, diam, K_eq)
-Analysis.assignResevoirParams(elev_o, H_o)
-Analysis.assignAreaCapacityCurves(path_area, path_cap)
-Analysis.assignDrawDownTargetElev(elev_drawdown, note="10% resevoir head in 7 days")
+Analysis.assignOutletParams(multiplier, diam, loss_factor)
+Analysis.assignResevoirParams(initial_elev, initial_head)
+Analysis.assignAreaCapacityCurves(area, capacity)
+Analysis.assignDrawDownTargetElev(target_elev, note="10% resevoir head in 7 days")
 Analysis.runDrawdownAnalysis()
 Analysis.summarize()
 Analysis.saveResultsToCSV()
