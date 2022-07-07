@@ -1,17 +1,17 @@
 # Drawdown Analysis
 
-A simple class implementation for performing emergency drawdown analysis for dam outlet works using area capacity curves and discharge functions.
+A simple class implementation for performing drawdown analysis of dam outlet works using area capacity curves and discharge functions.
 
 ## Implementation Notes
 
 * Based on USBR's [Design of Small Dams](https://www.usbr.gov/tsc/techreferences/mands/mands-pdfs/SmallDams.pdf) (1987), Chapter 10, Section 10.14 Pressure Flow in Outlet Conduits
 * This implementation uses the `diameter` (or `area`) and equivalent loss coefficient (`K_eq`) to characterize the drawdown function/discharge of a single outlet
 * The key discharge/drawdown function is give by **Section 10, Eq. 8**, where, $Q$ is the discharge, $K_{eq}$ is the equivalent loss coefficient, $A$ is the outlet area, $g$ is the gravitational constant, and $H_T$ is the total head measured from the resevoir pool to the centerline of the outlet: 
-$$
+$
 \begin{align}
     Q=A\sqrt{\frac{2\cdot g\cdot H_T}{K_{eq}}}
 \end{align}
-$$
+$
 * A multiplier (`N_mult`) is provided to scale the discharge for additional outlets (e.g., use `N_mult=2` for two identically sized outlets)
 
 ## Assumptions and Inputs
