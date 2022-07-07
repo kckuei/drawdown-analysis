@@ -23,7 +23,7 @@ $$Q=A\sqrt{\frac{2\cdot g\cdot H_T}{K_{eq}}}$$
 
 ## Example Usage
 
-The code below is a example snippet of the class usage. A more detailed notebook example is included. 
+Example usage provided below. A more detailed notebook example is included with the repo.
 
 ```python
 import DrawDownAnalysis as da
@@ -50,9 +50,13 @@ Analysis.runDrawdownAnalysis()
 Analysis.summarize()
 Analysis.saveResultsToCSV()
 Analysis.sensitivityAnalysis()
-print("Analysis successful.")
 ```
 
+## To Do / Future Updates
+
+* Unit system
+* Outlet table implementation for distinct outlet configurations
+* Command line implementation
 
 [loss-model]: assets/loss-model.png
 [loss-table]: assets/loss-table.png
