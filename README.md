@@ -3,8 +3,8 @@
    /   \_ __ __ ___      ____| | _____      ___ __     /_\  _ __   __ _| |_   _ ___(_)___  ---------/       \      
   / /\ / '__/ _` \ \ /\ / / _` |/ _ \ \ /\ / / '_ \   //_\\| '_ \ / _` | | | | / __| / __|         /         \
  / /_//| | | (_| |\ V  V / (_| | (_) \ V  V /| | | | /  _  \ | | | (_| | | |_| \__ \ \__ \        /           \___
-/___,' |_|  \__,_| \_/\_/ \__,_|\___/ \_/\_/ |_| |_| \_/ \_/_| |_|\__,_|_|\__, |___/_|___/_____=======\           \
-                                                                          |___/                        \==============>___
+/___,' |_|  \__,_| \_/\_/ \__,_|\___/ \_/\_/ |_| |_| \_/ \_/_| |_|\__,_|_|\__, |___/_|___/_____o======\           \
+                                                                          |___/                         \==============>___
 ```
 #
 
@@ -31,8 +31,8 @@ $$Q=A\sqrt{\frac{2\cdot g\cdot H_T}{K_{eq}}}$$
 * The area capacity curves must also be provided as input, either in the form of csv files, or pandas tables
 * The loss coefficient should be determined through characterization of the outlet works by developing a loss model (see Chapter 10 of reference for more info). A typical example is shown below.
   
-<img src="assets/loss-model.png" alt="loss-model" width="200"/>
-<img src="assets/table-model.png" alt="table-model" width="200"/>
+<img src="assets/loss-model.png" alt="loss-model" width="700"/>
+<img src="assets/loss-table.png" alt="loss-table" width="700"/>
 
 ## Example Usage
 
