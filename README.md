@@ -19,7 +19,7 @@ $
 * Full Conduit (Pressure) Flow (Section 10 applicable)
 * Minimum parameters required are the outlet diameter `diam`, equivalent loss coefficient `K_eq`, starting elevation `elev_o`, initial head `H_o`, and target drawdown elevation `elev_drawdown` 
 * The area capacity curves must also be provided as input, either in the form of csv files, or pandas tables
-* The equivalent loss coefficient should be determined through characterization/analysis of the outlet works be developing a loss model, as shown:
+* The equivalent loss coefficient should be determined through characterization/analysis of the outlet works by diagramming/developing a loss model.
   
 ![Loss Model Example][loss-model]
 
@@ -27,7 +27,7 @@ $
 
 The code below is a example snippet of the class usage. A more detailed notebook example is included. 
 
-`
+```
 import DrawDownAnalysis as da
 
 # Parameters
@@ -53,7 +53,7 @@ Analysis.summarize()
 Analysis.saveResultsToCSV()
 Analysis.sensitivityAnalysis()
 print("Analysis successful.")
-`
+```
 
 
 [loss-model]: assets/loss-model.png
