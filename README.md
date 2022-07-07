@@ -92,6 +92,19 @@ Results saved to 2022-07-07-drawdown-analysis.csv
 
 <img src="assets/drawdown.png" alt="drawdown-figure" width="600"/>
 
+## How it works
+
+The program basically integrates the change in resevoir storage over time: 
+
+ 0. Choose analysis timestep and number of steps
+ 1. Load resevoir, outlet parameters, and storage curves
+ 2. Initialize elevation, head, and storage
+ 3. For each time increment
+    * Compute discharge
+    * Update storage
+    * Look up elevation from storage curve
+    * Update elevation
+    * Update head
 
 ## To Do / Future Updates
 
