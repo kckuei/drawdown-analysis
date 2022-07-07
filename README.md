@@ -10,13 +10,6 @@ _______ /               \
       /                   \
 =======================================
 
-    ____                          __                       ___                __           _     
-   / __ \_________ __      ______/ /___ _      ______     /   |  ____  ____ _/ /_  _______(_)____
-  / / / / ___/ __ `/ | /| / / __  / __ \ | /| / / __ \   / /| | / __ \/ __ `/ / / / / ___/ / ___/
- / /_/ / /  / /_/ /| |/ |/ / /_/ / /_/ / |/ |/ / / / /  / ___ |/ / / / /_/ / / /_/ (__  ) (__  ) 
-/_____/_/   \__,_/ |__/|__/\__,_/\____/|__/|__/_/ /_/  /_/  |_/_/ /_/\__,_/_/\__, /____/_/____/  
-                                                                            /____/               
-
 
 Simple class implementation for performing drawdown analysis of dam outlet works using area capacity curves and discharge functions.
 
@@ -76,6 +69,11 @@ Analysis.sensitivityAnalysis()
 * Outlet table implementation for distinct outlet configurations
 * Command line implementation
 * Excel output for printing to files
+
+## Credit
+
+* [text to ascii art generator](https://patorjk.com/software/taag/#p=display&f=Ogre&t=Drawdown%20Analysis)
+
 
 [loss-model]: assets/loss-model.png
 [loss-table]: assets/loss-table.png
