@@ -266,7 +266,7 @@ class DrawDownAnalysis:
             print(f"Zero discharge reached at index: {drained_index}")
             return Analysis.df_results.head(drained_index + 1)
     
-    def sensitivityAnalysis(self, ratios = np.array([1.0, 1.25, 1.5, 2.0, 5.0, 10.0]), display=True):
+    def sensitivityAnalysis(self, ratios = [1.0, 1.25, 1.5, 2.0, 5.0, 10.0], display=True):
         """
         Performs sensitivity analysis for different loss ratios
         ratios - loss ratio sensitivity value = K(sensitivity analysis)/K_eq(base analysis)
@@ -276,7 +276,7 @@ class DrawDownAnalysis:
         analyses = [] 
         time_drawdowns = [] 
         time_drained = []
-        K_values = ratios * self.K_eq
+        K_values = np.array(ratios) * self.K_eq
         for i, k in enumerate(K_values):
             # instantiate a new object using exisitng params but for different k values
             a = DrawDownAnalysis(dt=self.dt, n_steps=self.n_steps)
