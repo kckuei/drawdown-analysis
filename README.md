@@ -90,6 +90,9 @@ Results saved to 2022-07-07-drawdown-analysis.csv
 5                 10.00 30.00          5.08           23.38
 ```
 
+<img src="assets/drawdown.png" alt="drawdown-figure" width="600"/>
+
+
 ## To Do / Future Updates
 
 * Unit system
